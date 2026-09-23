@@ -14,5 +14,9 @@ __pycache__/
 # 忽略输出目录
 output/
 
+# 忽略日志与临时文件
+*.log
+*.bak
+
 uv.lock 
 

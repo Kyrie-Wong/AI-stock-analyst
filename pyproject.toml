@@ -2,18 +2,17 @@
 name = "ai-kline"
 version = "0.1.0"
 description = "A股技术分析与AI预测工具"
-requires-python = ">=3.12"
+requires-python = ">=3.10"
 dependencies = [
     "python-dotenv",
     "pandas",
     "numpy",
     "matplotlib",
     "akshare",
-    "pandas-ta",
-    "scikit-learn",
-    "tables",  # 用于HDF5
-    "pyarrow",  # 用于Parquet
+    "tushare",
+    "Pillow",
+    "flask",
+    "openai",
     "mcp>=1.9.0",
     "pyecharts",
-    "google-genai"
 ]

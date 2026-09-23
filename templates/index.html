@@ -3,105 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI看线 - A股技术分析与AI预测工具</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <title>AI看线 · A股技术分析终端</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div class="container-fluid">
-        <header class="p-3 mb-4 bg-primary text-white">
-            <div class="container">
-                <div class="d-flex align-items-center justify-content-between">
-                    <h1 class="mb-0">AI看线</h1>
-                    <p class="mb-0">A股技术分析与AI预测工具</p>
+    <!-- 顶部导航 -->
+    <header class="topbar">
+        <div class="topbar-inner">
+            <div class="brand">
+                <svg class="brand-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <rect x="4"  y="8"  width="3" height="8"  rx="0.6" fill="#f6465d"/>
+                    <rect x="5.2" y="5"  width="0.7" height="14" fill="#f6465d"/>
+                    <rect x="10.5" y="6" width="3" height="9" rx="0.6" fill="#2ebd85"/>
+                    <rect x="11.7" y="3" width="0.7" height="15" fill="#2ebd85"/>
+                    <rect x="17" y="10" width="3" height="7" rx="0.6" fill="#f0b90b"/>
+                    <rect x="18.2" y="7" width="0.7" height="13" fill="#f0b90b"/>
+                </svg>
+                <div class="brand-text">
+                    <span class="brand-name">股票分析</span>
+                    <span class="brand-sub">技术面、基本面、资金面、新闻舆情</span>
                 </div>
             </div>
-        </header>
-
-        <div class="container">
-            <div class="row">
-                <!-- 左侧表单区域 -->
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-header bg-primary text-white">
-                            <h5 class="mb-0">股票分析</h5>
-                        </div>
-                        <div class="card-body">
-                            <form id="analyzeForm">
-                                <div class="mb-3">
-                                    <label for="stockCode" class="form-label">股票代码</label>
-                                    <input type="text" class="form-control" id="stockCode" name="stock_code" placeholder="例如: 000001" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="period" class="form-label">分析周期</label>
-                                    <select class="form-select" id="period" name="period">
-                                        <option value="1年" selected>1年</option>
-                                        <option value="6个月">6个月</option>
-                                        <option value="3个月">3个月</option>
-                                        <option value="1个月">1个月</option>
-                                    </select>
-                                </div>
-                                <button type="submit" class="btn btn-primary w-100">开始分析</button>
-                            </form>
-                        </div>
-                    </div>
-
-                    <!-- 股票基本信息卡片 -->
-                    <div id="stockInfoCard" class="card mt-4 d-none">
-                        <div class="card-header bg-info text-white">
-                            <h5 class="mb-0">股票基本信息</h5>
-                        </div>
-                        <div class="card-body" id="stockInfoBody">
-                            <!-- 股票信息将通过JavaScript动态填充 -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 右侧结果区域 -->
-                <div class="col-md-8">
-                    <!-- 加载中提示 -->
-                    <div id="loadingIndicator" class="text-center my-5 d-none">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">加载中...</span>
-                        </div>
-                        <p class="mt-2">正在分析，请稍候...</p>
-                    </div>
-
-                    <!-- 图表区域 -->
-                    <div id="chartsArea" class="d-none">
-                        <div class="card mb-4">
-                            <div class="card-header bg-success text-white">
-                                <h5 class="mb-0">交互式K线图</h5>
-                            </div>
-                            <div class="card-body" id="chartImages">
-                                <!-- 图表将通过JavaScript动态填充 -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- AI分析结果 -->
-                    <div id="analysisResult" class="card mb-4 d-none">
-                        <div class="card-header bg-warning text-dark">
-                            <h5 class="mb-0">AI分析结果</h5>
-                        </div>
-                        <div class="card-body">
-                            <div id="analysisText" class="analysis-content p-3 bg-light rounded"></div>
-                        </div>
-                    </div>
-                </div>
+            <div class="topbar-meta">
+                <span class="meta-chip"><i class="dot dot-live"></i>Tushare 数据源</span>
+                <span class="meta-chip"><i class="dot dot-live"></i>DeepSeek 模型</span>
             </div>
         </div>
+    </header>
 
-        <footer class="mt-5 p-3 bg-light text-center">
-            <div class="container">
-                <p class="mb-0">© 2025 AI看线 - A股技术分析与AI预测工具</p>
-                <p class="mb-0 small text-muted">免责声明：本工具提供的分析和预测仅供参考，不构成任何投资建议。投资有风险，入市需谨慎。</p>
+    <main class="layout">
+        <!-- 左侧控制面板 -->
+        <aside class="panel side">
+            <div class="panel-head">
+                <span class="panel-dot" style="background:#f0b90b"></span>
+                <h2>参数栏</h2>
             </div>
-        </footer>
-    </div>
+            <form id="analyzeForm" class="control-form">
+                <label class="field">
+                    <span class="field-label">股票代码</span>
+                    <input type="text" id="stockCode" name="stock_code" class="text-input mono"
+                           placeholder="000001 / 600519 / 300750" autocomplete="off" required>
+                </label>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+                <div class="field">
+                    <span class="field-label">分析周期</span>
+                    <div class="period-pills" id="periodPills">
+                        <button type="button" class="pill" data-value="1年">1年</button>
+                        <button type="button" class="pill" data-value="6个月">6个月</button>
+                        <button type="button" class="pill" data-value="3个月">3个月</button>
+                        <button type="button" class="pill" data-value="1个月">1个月</button>
+                    </div>
+                    <select id="period" name="period" class="hidden-select" aria-hidden="true" tabindex="-1">
+                        <option value="" selected></option>
+                        <option value="1年">1年</option>
+                        <option value="6个月">6个月</option>
+                        <option value="3个月">3个月</option>
+                        <option value="1个月">1个月</option>
+                    </select>
+                </div>
+
+                <label class="field">
+                    <span class="field-label">开始日期</span>
+                    <input type="date" id="startDate" name="start_date" class="text-input mono"
+                           max="" autocomplete="off">
+                </label>
+
+                <label class="field">
+                    <span class="field-label">结束日期</span>
+                    <input type="date" id="endDate" name="end_date" class="text-input mono"
+                           max="" autocomplete="off">
+                </label>
+
+                <button type="submit" class="run-btn" id="runBtn">
+                    <span class="run-btn-text">开始分析</span>
+                </button>
+            </form>
+
+            <!-- 股票基本信息 -->
+            <div id="stockInfoCard" class="info-card hidden">
+                <div class="panel-head">
+                    <span class="panel-dot" style="background:#2ebd85"></span>
+                    <h2>股票基本信息</h2>
+                </div>
+                <div id="stockInfoBody" class="info-body"></div>
+            </div>
+        </aside>
+
+        <!-- 右侧结果区 -->
+        <section class="panel main-area">
+            <!-- 估值与交易指标卡片 -->
+            <div id="metricCards" class="metric-cards hidden"></div>
+
+            <!-- 空状态 -->
+            <div id="emptyState" class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" class="empty-icon">
+                    <path d="M3 17l5-6 4 3 6-8 3 4" stroke="#2a3444" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M3 21h18" stroke="#2a3444" stroke-width="1.6" stroke-linecap="round"/>
+                </svg>
+                <p>输入股票代码，开始分析</p>
+                <p class="empty-hint">行情 · 财务 · 新闻 · 技术指标 · AI 解读</p>
+            </div>
+
+            <!-- 加载状态 -->
+            <div id="loadingIndicator" class="loading-state hidden">
+                <div class="loading-bars">
+                    <span></span><span></span><span></span><span></span><span></span>
+                </div>
+                <p class="loading-text">正在分析，请稍候…</p>
+                <p class="loading-sub">拉取行情与财务数据 → 计算技术指标 → 生成图表 → AI 解读</p>
+            </div>
+
+            <!-- 图表区 -->
+            <div id="chartsArea" class="result-block hidden">
+                <div class="panel-head">
+                    <span class="panel-dot" style="background:#f6465d"></span>
+                    <h2>交互式图表</h2>
+                </div>
+                <div id="chartImages" class="chart-area"></div>
+            </div>
+
+            <!-- AI 分析结果 -->
+            <div id="analysisResult" class="result-block hidden">
+                <div class="panel-head">
+                    <span class="panel-dot" style="background:#8b5cf6"></span>
+                    <h2>分析结果</h2>
+                </div>
+                <div id="analysisText" class="analysis-content"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>© KK 仅供学习研究，不构成投资建议。投资有风险，入市需谨慎。</p>
+    </footer>
+
+    <div id="toast" class="toast hidden"></div>
+
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
-</html> 
+</html>
