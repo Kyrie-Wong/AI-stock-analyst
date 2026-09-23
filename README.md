@@ -1,4 +1,4 @@
-# AI看线 - 股票技术分析与AI预测工具（AI-Kline - Stock Technical Analysis and AI Prediction Tool）
+# AI-Kline - A-share Technical Analysis and AI Prediction Tool
 
 
 <div align="center">
@@ -7,157 +7,169 @@
 
 </div>
 
-## 项目简介
+## Project Overview
 
-AI看线是一个基于Python的A股分析工具，结合了传统技术分析和人工智能预测功能。利用K线图，技术指标，财务数据，新闻数据、资金流向与两融数据对股票进行全面分析及预测。该工具可以：
+AI-Kline is a Python-based A-share stock analysis tool that combines traditional technical analysis with AI prediction. It performs comprehensive analysis and forecasting using K-line charts, technical indicators, financial data, news, capital flow, and margin trading data. The tool can:
 
-1. 获取A股股票的历史量价数据并计算各种技术指标
-2. 生成专业的K线图、技术指标及资金流向可视化图表
-3. 获取股票相关的财务数据、新闻信息、估值指标与龙虎榜数据
-4. 使用openai api分析整合数据并预测股票未来走势
+1. Retrieve historical price-volume data for A-share stocks and compute various technical indicators
+2. Generate professional K-line charts, technical indicator charts, and capital flow visualizations
+3. Access financial data, news, valuation metrics (daily_basic), and Dragon-Tiger List (top_list) data
+4. Use an OpenAI-compatible multimodal API to integrate all data and predict future trends
 
-## 功能特点
+## Key Features
 
-- **数据获取**：使用Tushare获取A股股票的历史交易数据、财务指标、估值数据（daily_basic）、资金流向（moneyflow）、融资融券（margin）和龙虎榜（top_list）数据
-- **技术分析**：计算多种技术指标，包括MA、MACD、KDJ、RSI、布林带等
-- **可视化**：生成静态和交互式K线图（黑色背景）、技术指标图表及资金流向与两融图表（资金柱状图+融券余额右轴折线图）
-- **AI分析**：利用多模态AI基于7章节结构化prompt分析股票（技术指标、基本面、市场情绪、资金流向、上涨概率预测、投资建议），并预测未来走势
-- **Web界面**：提供简洁美观的Web界面，页面顶部为两行估值/成交额/龙虎榜指标卡片，支持自定义分析时间区间（开始/结束日期随分析周期联动），方便用户输入股票代码查看分析结果
-- **MCP SERVER**：提供MCP SERVER支持，支持通过LLM交互，随时分析股票
+- **Data Acquisition**: Uses Tushare to fetch historical trading data, financial indicators, valuation data (daily_basic), capital flow (moneyflow), margin trading (margin), and Dragon-Tiger List (top_list) data
+- **Technical Analysis**: Computes MA, MACD, KDJ, RSI, Bollinger Bands, and more
+- **Visualization**: Static and interactive K-line charts (dark theme), technical indicator charts, and capital flow / margin charts (fund bars + margin balance as a right-axis line)
+- **AI Analysis**: A structured 7-section prompt drives the multimodal AI through technicals, fundamentals, market sentiment, capital flow, upside-probability forecast, and investment advice
+- **Web Interface**: Clean web UI with two rows of metric cards on top (valuation, turnover, Dragon-Tiger List), and a custom analysis date range (start/end dates follow the selected period)
+- **MCP SERVER**: MCP server support for LLM interaction — analyze any stock on demand
 
+## Installation
 
-## 安装说明
+### Requirements
 
-### 环境要求
+- Python 3.10+
+- Dependencies: see `requirements.txt`
 
-- Python 3.8+
-- 依赖包：见`requirements.txt`
+### Setup
 
-### 安装步骤
+1. Clone or download this repository
 
-1. 克隆或下载本项目到本地
+```bash
+git clone https://github.com/<your-org>/AI-Kline.git
+cd AI-Kline
+```
 
-2. 安装依赖包
+2. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. 创建`.env`文件，添加API密钥
+3. Create a `.env` file (see `.env.example`)
 
 ```
 API_KEY=your_api_key_here
-BASE_URL=
-MODEL_NAME=
+BASE_URL=https://api.x.ai/v1
+MODEL_NAME=grok-2-vision-1212
 TUSHARE_TOKEN=your_tushare_token_here
 ```
 
-> 注意：需使用多模态模型；Tushare token 在 https://tushare.pro 注册获取，不同接口有积分门槛（daily 需 120 积分，fina_indicator/top_list 需 2000 积分），积分不足的接口会返回空数据并提示，不影响其他功能运行
+> Notes:
+> - The model must be **multimodal (vision)** — a K-line chart image is sent along with the prompt
+> - Get a Tushare token at https://tushare.pro; different APIs have point thresholds (`daily` needs 120 points; `fina_indicator` / `top_list` need 2000). APIs your account can't access simply return empty data without affecting the rest
 
-## 使用方法
+## Usage
 
-### 命令行使用
+### Command Line
 
 ```bash
-python main.py --stock_code 000001 --period 1年 --save_path ./output
+python main.py --stock_code 000001 --period 1年
 ```
 
-参数说明：
-- `--stock_code`：股票代码，必填参数
-- `--period`：分析周期，可选值："1年"、"6个月"、"3个月"、"1个月"，默认为"1年"
-- `--start_date`：开始日期（YYYY-MM-DD），指定后优先于周期
-- `--end_date`：结束日期（YYYY-MM-DD），默认为今天
-- `--save_path`：结果保存路径，默认为"./output"
+Arguments:
+- `--stock_code`: stock code, required
+- `--period`: analysis period — "1年" / "6个月" / "3个月" / "1个月" (default "1年")
+- `--start_date`: start date (YYYY-MM-DD); takes precedence over `--period` when set
+- `--end_date`: end date (YYYY-MM-DD), defaults to today
+- `--save_path`: output directory (default "./output")
 
-### Web界面使用
-
-启动Web服务：
+### Web Interface
 
 ```bash
 python web_app.py
 ```
 
-然后在浏览器中访问即可使用Web界面：
+Open in your browser:
 
-1. 在表单中输入股票代码（例如：000001）
-2. 选择分析周期，或手动指定开始/结束日期（选择周期后日期会自动联动）
-3. 点击"开始分析"按钮
-4. 等待分析完成后查看结果
+1. Enter a stock code (e.g. 000001)
+2. Select an analysis period, or set start/end dates manually (dates auto-sync with the period)
+3. Click "开始分析" (Start Analysis)
+4. Wait for the analysis to complete
 
-Web界面包括以下内容：
-- 顶部指标卡片（两行各五个：PE(TTM)、PB、PS、股息率、总市值、流通市值、量比、换手率、成交额、龙虎榜数据）
-- 交互式K线图（黑色背景）与资金流向/两融图表（资金柱状图，融券余额以右轴折线显示）
-- AI分析结果文本（Markdown 表格与标题渲染，含上涨概率预测）
+The page shows:
+- Two rows of metric cards on top: PE(TTM), PB, PS, dividend yield, total market cap, float market cap, volume ratio, turnover rate, turnover (in 100M CNY), and Dragon-Tiger List data
+- Interactive K-line chart (dark theme) and capital flow / margin chart (fund bars; margin balance as a right-axis line)
+- AI analysis report (Markdown tables/headings rendered, with upside-probability forecast)
 
-页面截图：
+Screenshot:
 
-![Web界面截图](static/images/image.png)
+![Web UI](static/images/image.png)
 
 
-### MCP SERVER使用
+### MCP Server
 
-启动mcp：
+Start the MCP server (streamable-http, for clients like Cherry Studio):
+
 ```bash
-uv run  mcp_server.py
+uv run mcp_server.py
 ```
 
-然后在mcp客户端中配置（streamable-http）：
-http://localhost:8000/mcp 
+Then configure your MCP client (streamable-http) with:
+http://localhost:8000/mcp
 
-Cherry-Studio页面截图：
+For MCP clients that spawn local stdio servers (e.g. Kimi Code, Claude Desktop), launch with:
 
-![MCP界面截图](static/images/mcp1.png)
-![MCP界面截图](static/images/mcp2.png)
+```bash
+python mcp_server.py --transport stdio
+```
 
+Tools exposed: `ashare_analysis` (full analysis), `lookup_ashare_code` (name → code), `get_ashare_quote`, `get_ashare_news`, `get_ashare_financial`, `get_ashare_capital_flow`.
 
+Cherry Studio screenshots:
 
-### 输出结果
-
-程序运行后将在指定的保存路径下生成：
-
-1. K线图、技术指标图表及资金流向/两融图表（静态PNG图片和交互式HTML图表）
-2. AI分析结果文本文件
-
+![MCP](static/images/mcp1.png)
+![MCP](static/images/mcp2.png)
 
 
 
-## 项目结构
+### Output
+
+Results are written to the save path (`./output` by default):
+
+1. K-line / indicator / capital-flow charts (static PNG and interactive HTML)
+2. AI analysis report text file
+
+
+
+
+## Project Structure
 
 ```
-AI看线/
-├── main.py                 # 主程序入口（命令行）
-├── web_app.py              # Web应用入口
-├── mcp_server.py           # MCP SERVER入口
-├── requirements.txt        # 依赖包列表
-├── .env                    # 环境变量配置（需自行创建）
-├── modules/                # 功能模块
+AI-Kline/
+├── main.py                 # CLI entry point
+├── web_app.py              # Web app entry point
+├── mcp_server.py           # MCP server entry point
+├── requirements.txt        # Python dependencies
+├── .env.example            # Environment variable template
+├── modules/                # Core modules
 │   ├── __init__.py
-│   ├── data_fetcher.py     # 数据获取模块
-│   ├── technical_analyzer.py # 技术分析模块
-│   ├── visualizer.py       # 可视化模块
-│   └── ai_analyzer.py      # AI分析模块
-├── templates/              # Web模板目录
-│   └── index.html          # 主页模板
-├── static/                 # 静态资源目录
-│   ├── css/                # CSS样式
-│   │   └── style.css       # 自定义样式
-│   └── js/                 # JavaScript脚本
-│       └── main.js         # 主要脚本
-└── output/                 # 输出结果目录（运行时自动创建）
-    ├── charts/             # 图表目录
-    └── *_analysis_result.txt # 分析结果文件
+│   ├── data_fetcher.py     # Data acquisition (Tushare + AKShare fallback)
+│   ├── technical_analyzer.py # Technical indicators
+│   ├── visualizer.py       # Chart generation (matplotlib + pyecharts)
+│   └── ai_analyzer.py      # AI analysis (OpenAI-compatible multimodal API)
+├── templates/
+│   └── index.html          # Web UI template
+├── static/
+│   ├── css/style.css
+│   └── js/main.js
+├── assets/
+│   └── echarts.min.js      # Bundled ECharts for offline interactive charts
+└── output/                 # Generated at runtime (git-ignored)
+    ├── charts/
+    └── *_analysis_result.txt
 ```
 
 
-## 注意事项
 
-- 本工具仅供学习和研究使用，不构成任何投资建议
-- AI分析结果基于历史数据和当前信息，不能保证未来走势的准确性
-- 使用前请确保已正确配置多模态模型API密钥（API_KEY/BASE_URL/MODEL_NAME）和 Tushare token
-- 股票数据获取依赖于Tushare，可能受到网络、积分门槛和数据源的限制
-- 本项目为QuantML开源项目，转载或使用需注明出处，商业使用请联系微信号QuantML
+## Notes
 
+- For learning and research only — not investment advice
+- AI predictions are based on historical and current data and cannot guarantee future performance
+- Configure a multimodal model (`API_KEY` / `BASE_URL` / `MODEL_NAME`) and a Tushare token before use
+- Data depends on Tushare availability, point thresholds, and network conditions
 
-## 免责声明
+## Disclaimer
 
-本工具提供的分析和预测仅供参考，不构成任何投资建议。投资有风险，入市需谨慎。用户应对自己的投资决策负责。
+All analysis and predictions are for reference only and do not constitute investment advice. Investing involves risk; proceed with caution. Users are responsible for their own investment decisions.
